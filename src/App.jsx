@@ -15,6 +15,13 @@ import {
   createTheme,
   CssBaseline,
   keyframes,
+  TextField,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -27,13 +34,26 @@ import {
   Database,
   Instagram,
   Facebook,
+  Plus,
   Sun,
-  Moon
+  Moon,
+  Send
 } from 'lucide-react';
 
 function App() {
   const [darkMode, setDarkMode] = React.useState(false);
   const [isHovered, setIsHovered] = React.useState(false);
+  const [formData, setFormData] = React.useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: '',
+  });
+  const [snackbar, setSnackbar] = React.useState({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
 
   const theme = createTheme({
     palette: {
@@ -62,15 +82,22 @@ function App() {
   `;
 
   const skills = [
-    { name: 'Frontend Development', level: 90, icon: <Code2 /> },
-    { name: 'Backend Development', level: 85, icon: <Database /> },
+    { name: 'HTML', level: 95, icon: <Code2 /> },
+    { name: 'Tailwind CSS', level: 85, icon: <Code2 /> },
+    { name: 'JavaScript', level: 90, icon: <Code2 /> },
+    { name: 'React.js', level: 85, icon: <Code2 /> },
+    { name: 'Python', level: 85, icon: <Database /> },
+    { name: 'Flask', level: 80, icon: <Database /> },
+    { name: "Git & GitHub", level:80, icon: <Github /> },
     { name: 'Machine Learning', level: 75, icon: <Brain /> },
+    { name: 'SQL & Databases', level: 80, icon: <Database /> },
   ];
-
+  
   const projects = [
     {
-      title: 'E-Commerce Platform',
-      description: 'Built a full-stack e-commerce platform using React, Node.js, and MongoDB',
+      title: 'Flashlearn Platform',
+      image: 'https://camo.githubusercontent.com/1de02b4b60b49848cc428f3873ee3f60c86b69aca8a578194046cec4219029f4/68747470733a2f2f692e70636d61672e636f6d2f696d61676572792f6c696e657570732f3031436843544d5958386e6a516c3961705a356f7952692d312e2e76313536393439323830372e6a7067',
+      description: 'Built a full-stack e-commerce platform using React, js and python',
       link: 'https://github.com/John-Gaitho/flashlearn-frontend'
     },
     {
@@ -79,7 +106,7 @@ function App() {
       link: 'https://github.com/John-Gaitho/music-melodies-frontend-app'
     },
     {
-      title: 'Task Management App',
+      title: 'Music Management App',
       description: 'Created a real-time task management application using React and Firebase',
       link: 'https://github.com/John-Gaitho/project3'
     },
@@ -108,9 +135,38 @@ function App() {
     }
   };
 
-  const progressVariants = {
-    initial: { width: 0 },
-    animate: { width: "100%" }
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Form submitted:', formData);
+    // Here you would typically send the data to your backend or email service
+    // For demonstration purposes, we'll just show a success message
+    setSnackbar({
+      open: true,
+      message: 'Message sent successfully! I will get back to you soon.',
+      severity: 'success'
+    });
+    // Reset form
+    setFormData({
+      name: '',
+      email: '',
+      subject: '',
+      message: ''
+    });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({
+      ...snackbar,
+      open: false
+    });
   };
 
   return (
@@ -182,7 +238,7 @@ function App() {
         {/* Hero Section */}
         <Box
           sx={{
-            backgroundImage: 'url(https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80)',
+            backgroundImage: 'url(https://wallpapercave.com/wp/wp6690890.jpg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             py: 15,
@@ -216,7 +272,7 @@ function App() {
                 >
                   <Box
                     component="img"
-                    src="https://scontent-mba2-1.xx.fbcdn.net/v/t39.30808-6/470245450_1289403378929853_7941697960345442804_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeHPJGZP0eRxm5Mc37pLkDVkRvIlFGUtbkBG8iUUZS1uQOQGi20D36KG984O2f6YCTFqaGDwRV8b9KRLVPXd3tcg&_nc_ohc=BMQFQlkixeYQ7kNvgGQA3f7&_nc_zt=23&_nc_ht=scontent-mba2-1.xx&_nc_gid=wIG0SN0VHk0dsHtKuG3j-Q&oh=00_AYGH9eDA48NRUa95GZuuOKPVgd8-5AmJOvYTQuqiXLgoAg&oe=67DF4827"
+                    src="https://avatars.githubusercontent.com/u/181092609?v=4"
                     alt="Profile"
                     sx={{
                       width: '100%',
@@ -242,6 +298,12 @@ function App() {
                   initial="hidden"
                   animate="visible"
                 >
+                  <motion.div variants={itemVariants}>
+                    <Typography variant="h4" color="white" gutterBottom>
+                       Hi, I'm John Gaitho 
+                    </Typography>
+                  </motion.div>
+
                   <motion.div variants={itemVariants}>
                     <Typography variant="h2" color="white" gutterBottom>
                        A Software Engineer
@@ -430,13 +492,167 @@ function App() {
               Get in Touch
             </Typography>
           </motion.div>
-          <Stack direction="row" spacing={2} justifyContent="center" flexWrap="wrap" useFlexGap>
+
+          {/* Contact Form */}
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={6}>
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+              >
+                <Card elevation={3} sx={{ p: 3 }}>
+                  <form onSubmit={handleSubmit}>
+                    <Stack spacing={3}>
+                      <Typography variant="h6" gutterBottom>
+                        Send me a message
+                      </Typography>
+                      
+                      <TextField
+                        label="Your Name"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        fullWidth
+                        required
+                        variant="outlined"
+                      />
+                      
+                      <TextField
+                        label="Your Email"
+                        name="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        fullWidth
+                        required
+                        variant="outlined"
+                      />
+                      
+                      <FormControl fullWidth variant="outlined">
+                        <InputLabel>Subject</InputLabel>
+                        <Select
+                          name="subject"
+                          value={formData.subject}
+                          onChange={handleInputChange}
+                          label="Subject"
+                          required
+                        >
+                          <MenuItem value="Project Inquiry">Project Inquiry</MenuItem>
+                          <MenuItem value="Job Opportunity">Job Opportunity</MenuItem>
+                          <MenuItem value="Collaboration">Collaboration</MenuItem>
+                          <MenuItem value="General Question">General Question</MenuItem>
+                          <MenuItem value="Other">Other</MenuItem>
+                        </Select>
+                      </FormControl>
+                      
+                      <TextField
+                        label="Your Message"
+                        name="message"
+                        value={formData.message}
+                        onChange={handleInputChange}
+                        fullWidth
+                        required
+                        multiline
+                        rows={4}
+                        variant="outlined"
+                      />
+                      
+                      <motion.div
+                        whileHover={{ 
+                          scale: 1.03,
+                          transition: { type: "spring", stiffness: 400 }
+                        }}
+                        whileTap={{ scale: 0.97 }}
+                      >
+                        <Button 
+                          type="submit" 
+                          variant="contained" 
+                          fullWidth
+                          size="large"
+                          startIcon={<Send />}
+                          sx={{
+                            background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
+                            boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .3)',
+                            py: 1.5
+                          }}
+                        >
+                          Send Message
+                        </Button>
+                      </motion.div>
+                    </Stack>
+                  </form>
+                </Card>
+              </motion.div>
+            </Grid>
+            
+            <Grid item xs={12} md={6}>
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+              >
+                <Card elevation={3} sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <Typography variant="h6" gutterBottom>
+                    Connect with me
+                  </Typography>
+                  <Typography variant="body1" paragraph>
+                    Feel free to reach out through any of the channels below. I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision.
+                  </Typography>
+                  
+                  <Stack spacing={2} sx={{ mt: 2 }}>
+                    {[
+                      { icon: <Github />, label: 'GitHub', href: 'https://github.com/John-Gaitho' },
+                      { icon: <Linkedin />, label: 'LinkedIn', href: 'https://linkedin.com/in/John-Gaitho' },
+                      { icon: <Instagram />, label: 'Instagram', href: 'https://instagram.com/yourusername' },
+                      { icon: <Facebook />, label: 'Facebook', href: 'https://www.facebook.com/john.gaitho.963' },
+                      { icon: <Mail />, label: 'Email', href: 'mailto:jgaitho016@gmail.com' }
+                    ].map((social, index) => (
+                      <motion.div
+                        key={social.label}
+                        whileHover={{ 
+                          scale: 1.05,
+                          transition: { type: "spring", stiffness: 400 }
+                        }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Button 
+                          startIcon={social.icon} 
+                          variant="outlined" 
+                          href={social.href}
+                          fullWidth
+                          sx={{
+                            borderWidth: 2,
+                            justifyContent: 'flex-start',
+                            py: 1,
+                            '&:hover': {
+                              borderWidth: 2,
+                              background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
+                              color: 'white',
+                              borderColor: 'transparent'
+                            }
+                          }}
+                        >
+                          {social.label}
+                        </Button>
+                      </motion.div>
+                    ))}
+                  </Stack>
+                </Card>
+              </motion.div>
+            </Grid>
+          </Grid>
+
+          {/* Social Media Links (smaller version at bottom) */}
+          <Stack direction="row" spacing={2} justifyContent="center" flexWrap="wrap" useFlexGap sx={{ mt: 6 }}>
             {[
               { icon: <Github />, label: 'GitHub', href: 'https://github.com/John-Gaitho' },
               { icon: <Linkedin />, label: 'LinkedIn', href: 'https://linkedin.com/in/John-Gaitho' },
               { icon: <Instagram />, label: 'Instagram', href: 'https://instagram.com/yourusername' },
-              { icon: <Facebook />, label: 'Facebook', href: 'https://facebook.com/John-Gaitho' },
-              { icon: <Mail />, label: 'Email', href: 'jgaitho016@gmail.com' }
+              { icon: <Facebook />, label: 'Facebook', href: 'https://www.facebook.com/john.gaitho.963' },
+              { icon: <Mail />, label: 'Email', href: 'mailto:jgaitho016@gmail.com' }
             ].map((social, index) => (
               <motion.div
                 key={social.label}
@@ -456,6 +672,7 @@ function App() {
                     startIcon={social.icon} 
                     variant="outlined" 
                     href={social.href}
+                    size="small"
                     sx={{
                       borderWidth: 2,
                       '&:hover': {
@@ -474,6 +691,18 @@ function App() {
           </Stack>
         </Container>
       </Box>
+
+      {/* Snackbar for form submission feedback */}
+      <Snackbar 
+        open={snackbar.open} 
+        autoHideDuration={6000} 
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </ThemeProvider>
   );
 }
